@@ -12,14 +12,16 @@ import tornado.wsgi
 
 
 class MainHandler(tornado.web.RequestHandler):
+    
     def get(self):
         self.write("Hello")
 
 
 class TestHandler(tornado.web.RequestHandler):
+    
     def get(self):
-        gevent.sleep(10)
-        self.write("test")
+        gevent.sleep(5)
+        self.write("Test")
 
 
 app = tornado.wsgi.WSGIApplication([
@@ -29,6 +31,7 @@ app = tornado.wsgi.WSGIApplication([
     
     
 class WServerManager(gevent.Greenlet):
+    
     def __init__(self, port, app=None):
         self.port = port
         self.app = app
@@ -45,11 +48,7 @@ class WServerManager(gevent.Greenlet):
 
 
 if __name__ == "__main__":
-    ws = WServerManager(7001, app) # 这个是通过协程执行的,所以下面需要一个协程join等待
+    ws = WServerManager(7001, app)
     ws.start()
-    print "....."
-    def loop():
-        while True:
-            gevent.sleep(600)
-    lp = gevent.spawn(loop)
-    lp.join()
+    gevent.wait()
+    

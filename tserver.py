@@ -8,6 +8,7 @@ from endpoint import EndPoint
 
 
 class Observer(EndPoint):
+    
     def on_connection_closed(self):
         print("Observer {0} closed the connecton".format(id(self)))
 
@@ -19,6 +20,7 @@ class Observer(EndPoint):
 
 
 class ObserverManager(gevent.Greenlet):
+    
     def __init__(self, port):
         self.port = port
         gevent.Greenlet.__init__(self)
@@ -37,9 +39,5 @@ class ObserverManager(gevent.Greenlet):
 if __name__ == "__main__":
     ob = ObserverManager(7000) # 这个是通过协程执行的,所以下面需要一个协程join等待
     ob.start()
-    print "....."
-    def loop():
-        while True:
-            gevent.sleep(600)
-    lp = gevent.spawn(loop)
-    lp.join()
+    gevent.wait()
+    
