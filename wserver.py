@@ -11,6 +11,7 @@ import tornado.web
 import tornado.wsgi
 import wsgiref.simple_server
 
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         self.write("Hello")
@@ -39,7 +40,7 @@ class WServerManager(gevent.Greenlet):
         yield "%s\n" % str(socket.getaddrinfo('www.baidu.com', 80))
 
     def _run(self):
-        print("WSGI Observer Listen at port {0}".format(self.port))
+        print("WSGI Server Listen at port {0}".format(self.port))
         server = WSGIServer(('0.0.0.0', self.port), self.app or self._app)
         server.serve_forever()
 
