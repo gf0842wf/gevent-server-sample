@@ -9,7 +9,6 @@ import socket
 
 import tornado.web
 import tornado.wsgi
-import wsgiref.simple_server
 
 
 class MainHandler(tornado.web.RequestHandler):
