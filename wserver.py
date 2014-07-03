@@ -3,24 +3,19 @@
 """WSGI Server Sample"""
 
 import gevent
-from gevent import monkey;monkey.patch_all()
+from gevent import monkey; monkey.patch_all()
 from gevent.pywsgi import WSGIServer
-import socket
 
 import tornado.web
 import tornado.wsgi
 
-import umysqldb
-umysqldb.install_as_MySQLdb()
-import MySQLdb
-print MySQLdb is umysqldb
-import torndb # 需要改torndb源码, 把 处理CONVERSIONS去掉
+from gmysql import Pool
 
 
 class MainHandler(tornado.web.RequestHandler):
     
     def get(self):
-        rows = self.application.conn.query("select * from book")
+        rows = self.application.pool.fetchall("select * from book")
         print rows
         self.write("{0}".format(rows))
 
@@ -36,7 +31,9 @@ app = tornado.wsgi.WSGIApplication([
     (r"/", MainHandler),
     (r"/test", TestHandler),
 ])
-app.conn = torndb.Connection("localhost", "test", "root", "112358")
+args = ('localhost', 'root', '112358', 'test')
+pool = Pool(args, 20)
+app.pool = pool
     
     
 class WServerManager(gevent.Greenlet):
