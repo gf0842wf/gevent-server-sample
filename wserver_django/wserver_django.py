@@ -18,7 +18,7 @@ class WServerManager(gevent.Greenlet):
 
     def _app(self, environ, start_response):
         start_response('200 OK', [('Content-Type','text/plain')])
-        yield "%s\n" % str(socket.getaddrinfo('www.baidu.com', 80))
+        yield "{0}\n".fromat(socket.getaddrinfo('www.baidu.com', 80))
 
     def _run(self):
         print("WSGI Server Listen at port {0}".format(self.port))
@@ -27,11 +27,8 @@ class WServerManager(gevent.Greenlet):
 
 
 if __name__ == "__main__":
-    ws = WServerManager(7003, application) # 这个是通过协程执行的,所以下面需要一个协程join等待
+    ws = WServerManager(7003, application)
     ws.start()
-    print "....."
-    def loop():
-        while True:
-            gevent.sleep(600)
-    lp = gevent.spawn(loop)
-    lp.join()
+    print "http://localhost:7003/test"
+    print "http://localhost:7003/test/sleep"
+    gevent.wait()
