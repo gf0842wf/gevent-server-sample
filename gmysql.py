@@ -172,6 +172,6 @@ class Pool(object):
     
 if __name__ == '__main__':
     args = ('localhost', 'root', '112358', 'test')
-    pool = Pool(args, 94)
+    pool = Pool(args, 10)
     print pool.fetchall("select * from book")
     
