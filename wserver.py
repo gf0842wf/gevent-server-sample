@@ -10,11 +10,19 @@ import socket
 import tornado.web
 import tornado.wsgi
 
+import umysqldb
+umysqldb.install_as_MySQLdb()
+import MySQLdb
+print MySQLdb is umysqldb
+import torndb # 需要改torndb源码, 把 处理CONVERSIONS去掉
+
 
 class MainHandler(tornado.web.RequestHandler):
     
     def get(self):
-        self.write("Hello")
+        rows = self.application.conn.query("select * from book")
+        print rows
+        self.write("{0}".format(rows))
 
 
 class TestHandler(tornado.web.RequestHandler):
@@ -28,6 +36,7 @@ app = tornado.wsgi.WSGIApplication([
     (r"/", MainHandler),
     (r"/test", TestHandler),
 ])
+app.conn = torndb.Connection("localhost", "test", "root", "112358")
     
     
 class WServerManager(gevent.Greenlet):
@@ -39,7 +48,7 @@ class WServerManager(gevent.Greenlet):
 
     def _app(self, environ, start_response):
         start_response('200 OK', [('Content-Type','text/plain')])
-        yield "%s\n" % str(socket.getaddrinfo('www.baidu.com', 80))
+        yield "{0}\n".format(socket.getaddrinfo('www.baidu.com', 80))
 
     def _run(self):
         print("WSGI Server Listen at port {0}".format(self.port))
