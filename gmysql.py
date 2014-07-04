@@ -136,13 +136,14 @@ class Pool(object):
                 q.next()
 
     def selectq(self, qid=-1):
-        "选择第几个队列, 默认返回长度最小的队列"
+        """选择第几个队列, 默认返回长度最小的队列"""
         if qid >= 0:
             return self.queues[qid%len(self.queues)]
-        minq = self.queues[0]
-        for q in self.queues:
-            if minq.qsize() > q.qsize():
-                minq = q
+#         minq = self.queues[0]
+#         for q in self.queues:
+#             if minq.qsize() > q.qsize():
+#                 minq = q
+        minq = min(self.queues, key=lambda qs:qs.qsize())
         return minq
 
     def query(self, sql, args=[], op=0, qid=-1, curclass=None, block=True):
