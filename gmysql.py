@@ -28,8 +28,7 @@ def IDGenerator():
         yield i
 
 
-class Connection:
-    _iter = IDGenerator()
+class Connection(object):
     reconnect_delay = 8 #重连等待时间
     
     def __init__(self, host, user, passwd, db, port=3306, autocommit=True, charset='utf8'):
@@ -84,7 +83,7 @@ class Pool(object):
         self.queues = []
         self.tasks = []
 
-        for i in xrange(n):
+        for _ in xrange(n):
             c = Connection(*args)
             self.conns.append(c)
             q = Queue()
@@ -172,6 +171,6 @@ class Pool(object):
     
 if __name__ == '__main__':
     args = ('localhost', 'root', '112358', 'test')
-    pool = Pool(args, 94)
+    pool = Pool(args, 20)
     print pool.fetchall("select * from book")
     
