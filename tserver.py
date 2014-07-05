@@ -37,7 +37,7 @@ class ObserverManager(gevent.Greenlet):
 
 
 if __name__ == "__main__":
-    ob = ObserverManager(7000) # 这个是通过协程执行的,所以下面需要一个协程join等待
+    ob = ObserverManager(7000) # 这个是通过协程执行的,所以下面需要wait等待
     ob.start()
     gevent.wait()
     

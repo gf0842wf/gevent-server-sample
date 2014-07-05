@@ -147,7 +147,7 @@ class Pool(object):
         return minq
 
     def query(self, sql, args=[], op=0, qid=-1, curclass=None, block=True):
-        if not isinstance(qid, (int, long)): # it's danger
+        if not isinstance(qid, (int, long)):
             qid = -1
         q = self.selectq(qid)
         if block:
@@ -175,3 +175,6 @@ if __name__ == '__main__':
     pool = Pool(args, 20)
     print pool.fetchall("select * from book")
     
+    # 像 execute 如果不关心执行结果,可以异步执行,不过记得join/wait等待
+    pool.execute("insert into book set name='abc', author='fk'")
+    gevent.wait()
