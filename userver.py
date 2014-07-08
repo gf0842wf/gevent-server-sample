@@ -12,7 +12,7 @@ class UDPServer(DatagramServer):
         """有datagram到来时会调用handle"""
         print('%s: got %r' % (address[0], datagram))
         self.socket.sendto(datagram, address)
-
+        # self.sendto(datagram, address)
 
 class UDPManager(gevent.Greenlet):
     

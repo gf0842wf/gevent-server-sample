@@ -79,7 +79,9 @@ class EndPoint(gevent.Greenlet):
         
 
 def create_connection(address, timeout=None, **ssl_args):
-    """客户端创建连接,返回sock"""
+    """客户端创建连接,返回sock
+    :自带有一个 from gevent.socket import create_connection, 不过没有ssl参数
+    """
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 0)
