@@ -21,6 +21,7 @@ class EndPoint(gevent.Greenlet):
         self.inbox.put(data)
 
     def recv_data(self):
+        """如果封包方式不同,需要重载这个函数"""
         while True:
             try:
                 length = self.transport.recv(4)
@@ -37,6 +38,7 @@ class EndPoint(gevent.Greenlet):
             self.on_data(data)
 
     def send_data(self):
+        """如果封包方式不同,需要重载这个函数"""
         while True:
             data = self.inbox.get()
             data_length = len(data)
@@ -45,16 +47,16 @@ class EndPoint(gevent.Greenlet):
             data = data_struct.pack(data_length, data)
             self.transport.sendall(data)
 
+    def on_data(self, data):
+        """called when data received. (stripped the 4 bytes header)"""
+        raise NotImplementedError()
+
     def on_connection_closed(self):
         """called when peer closed the connect"""
         raise NotImplementedError()
 
     def on_connection_lost(self):
         """called when lost peer"""
-        raise NotImplementedError()
-
-    def on_data(self, data):
-        """called when data received. (stripped the 4 bytes header)"""
         raise NotImplementedError()
 
     def terminate(self):

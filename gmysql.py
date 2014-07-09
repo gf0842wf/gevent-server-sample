@@ -1,13 +1,12 @@
-# coding: utf-8
-# Copyright (c) 2010-2012 Egin Technology Co., Ltd. See LICENSE for details.
-"""Wrapped from umysql.
-(need gevent)
+# -*- coding: utf-8 -*-
+
+"""mysql db connection and pool for gevent
+dependent packages: gevent, ultramysql
 support reconnect
 default charset set to utf8
 default autocommit=1 (Transction is not recommended)
 default cursorclass=DictCursor
 """
-
 import gevent
 from gevent import monkey; monkey.patch_socket()
 from gevent.queue import Queue

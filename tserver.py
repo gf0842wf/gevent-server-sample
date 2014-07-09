@@ -26,6 +26,7 @@ class ObserverManager(gevent.Greenlet):
         gevent.Greenlet.__init__(self)
 
     def _connection_handler(self, client, address):
+        # 这里 client 是socket
         print("New Connection From {0}".format(address))
         observer = Observer(client)
         observer.start()
