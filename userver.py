@@ -9,10 +9,13 @@ from gevent.server import DatagramServer
 class UDPServer(DatagramServer):
 
     def handle(self, datagram, address):
-        """有datagram到来时会调用handle"""
+        """有datagram到来时会调用handle
+        :可以根据address/uid来建立endpoint
+        """
         print('%s: got %r' % (address[0], datagram))
         self.socket.sendto(datagram, address)
         # self.sendto(datagram, address)
+
 
 class UDPManager(gevent.Greenlet):
     
@@ -24,6 +27,7 @@ class UDPManager(gevent.Greenlet):
         print("UDP Server at port {0}".format(self.port))
         server = UDPServer(('0.0.0.0', self.port))
         server.serve_forever()
+
 
 if __name__ == '__main__':
     us = UDPManager(7002)
