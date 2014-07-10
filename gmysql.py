@@ -17,15 +17,6 @@ import umysql
 import socket
 import traceback
 
-def IDGenerator():
-    i = 0
-    wall = 1 << 31
-    while True:
-        i += 1
-        if i > wall:
-            i = 1
-        yield i
-
 
 class Connection(object):
     reconnect_delay = 8 #重连等待时间
