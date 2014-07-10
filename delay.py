@@ -6,6 +6,7 @@
 
 from gevent import Greenlet
 import gevent
+import time
 
 
 class Delay(object):
@@ -168,7 +169,7 @@ def timeout(seconds=None, errback=None):
     return wrapper
 
 def timeout_partial(seconds=None, func=None, *args, **kw):
-    """和上面 timeout 类似, 只是不是使用装饰器
+    """和上面 timeout 类似, 只是不是使用装饰器:
     def test():
         gevent.sleep(5)
     ret = timeout_partial(3, test)
