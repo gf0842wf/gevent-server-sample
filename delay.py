@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """以协程的方式实现:延时调用,循环调用,超时调用
-: 如果为了优化协程数,最好使用 gevent.Timeout(或者下面的 timeout), 而不是使用 TimeoutMixin
+: 如果为了优化协程数,最好使用 gevent.Timeout(或者下面的 timeout | timeout_partial), 而不是使用 TimeoutMixin
 """
 
 from gevent import Greenlet
@@ -128,21 +128,23 @@ class TimeoutMixin(object):
     def reset_timeout(self):
         """重置超时
         """
-        assert self.start_flag == 0
+        assert self.start_flag == 1
         self.dc.cancel()
         self.dc = DelayCall(self.seconds, self.on_timeout)
         self.dc.start()
         
 
-def timeout(seconds=None):
-    """和TimeoutMixin 相比,1.没有另开使用协程,2.使用装饰器, 效率高点
+def timeout(seconds=None, errback=None):
+    """和 TimeoutMixin 相比,1.没有另开使用协程,2.使用装饰器, 效率高点
+    : 超时/其他异常会调用cb
+    : 注: 这个必须装饰阻塞函数(交出greenlet)上面才有效, TimeoutMixin 则没有限制
     @timeout(5)
     def test():
         gevent.sleep(8)
         return "test"
-    ret =  test()
-    if not isinstance(ret, BaseException):
-        print ret
+    ret = test()
+    if isinstance(ret, BaseException):
+        print "timeout..."
     """
     
     def wrapper(func):
@@ -155,18 +157,39 @@ def timeout(seconds=None):
                 ret = func(*args, **kw)
             except gevent.Timeout as t:
                 assert timer == t, t
+                if errback: errback(t)
                 print "Timeout!"
                 return t
-            except Exception as e:
-                print "Other Exception!", e
-                return e
             finally:
                 if timer:
                     timer.cancel()
             return ret
         return _wrapper
     return wrapper
-            
+
+def timeout_partial(seconds=None, func=None, *args, **kw):
+    """和上面 timeout 类似, 只是不是使用装饰器
+    def test():
+        gevent.sleep(5)
+    ret = timeout_partial(3, test)
+    if isinstance(ret, BaseException):
+        print "timeout..."
+    """
+    timer = None
+    if seconds is not None:
+        timer = gevent.Timeout(seconds)
+        timer.start()
+    try:
+        ret = func(*args, **kw)
+    except gevent.Timeout as t:
+        assert timer == t, t
+        print "Timeout!"
+        return t
+    finally:
+        if timer:
+            timer.cancel()
+    return ret
+        
             
 if __name__ == "__main__":
     
@@ -179,17 +202,19 @@ if __name__ == "__main__":
         def on_timeout(self):
             print "timeout..."
               
-              
     tt = TestTimeout()
     
     @timeout(3)
     def test():
         gevent.sleep(5)
         return 2
-    
     ret = test()
     print type(ret)
     print isinstance(ret, BaseException)
+    
+    def test2():
+        gevent.sleep(5)
+    print "t:", timeout_partial(3, test2) 
     
     gevent.wait()
         
