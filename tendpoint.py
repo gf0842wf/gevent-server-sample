@@ -5,6 +5,8 @@ from gevent.queue import Queue
 from gevent import socket
 import struct
 
+from delay import timeout_partial
+
 
 class EndPoint(gevent.Greenlet):
     """可以用在服务端/客户端"""
@@ -23,21 +25,32 @@ class EndPoint(gevent.Greenlet):
 
     def put_data(self, data):
         self.inbox.put(data)
-
+    
     def recv_data(self):
         """如果封包方式不同,需要重载这个函数"""
         while True:
             try:
-                length = self.transport.recv(4)
+                # length = self.transport.recv(4)
+                length = timeout_partial(10, self.transport.recv, 4) # 读头心跳10s
+                if isinstance(length, BaseException):
+                    print "heartbeat header timeout..."
+                    # to do something
+                    return
                 if not length:
                     self.on_connection_closed()
-                    break
-
+                    return
+                    # break
                 length = self.header_fmt.unpack(length)[0]
-                data = self.transport.recv(length)
+                # data = self.transport.recv(length)
+                data = timeout_partial(20, self.transport.recv, length) # 读内容心跳20s
+                if isinstance(data, BaseException):
+                    print "heartbeat data timeout..."
+                    # to do something
+                    return
             except:
                 self.on_connection_lost()
-                break
+                return
+                # break
 
             self.on_data(data)
 
@@ -109,4 +122,5 @@ if __name__ == "__main__":
     import struct
     sock = create_connection(("127.0.0.1", 7000))
     sock.sendall(struct.pack(">I5s", 5, "hello"))
-    print repr(sock.recv(10))
+    while True:
+        print repr(sock.recv(10))
