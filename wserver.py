@@ -3,7 +3,7 @@
 """WSGI Server Sample"""
 
 import gevent
-from gevent import monkey; monkey.patch_all()
+from gevent import socket
 from gevent.pywsgi import WSGIServer
 
 import tornado.web
