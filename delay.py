@@ -45,7 +45,7 @@ class DelayCall(Greenlet):
     
     
 class LoopingCall(Greenlet):
-    """以一个微线程的方式实现一个定时调用 example:
+    """以一个微线程的方式实现一个定时调用:
     def p(x):
         print x
     lc = LoopingCall(5, p, "xx")
@@ -133,40 +133,63 @@ class TimeoutMixin(object):
         self.dc = DelayCall(self.seconds, self.on_timeout)
         self.dc.start()
         
-        
-def test_timeout(timeout=None):
-    """这个是代码片段(不可执行), 示例使用gevent.Timeout 来处理收消息超时"""
-    timer = None
-    if timeout is not None:
-        timer = gevent.Timeout(timeout)
-        timer.start()
-    try:
-        data = self.sock.recv(self.buffer_size)
-        if not data: return
-    except gevent.Timeout, t:
-        assert timer == t, t
-        print "Socket: HeatBeat Timeout!"
-        return
-    except socket.error, e:
-        print "Socketrecv error:", e
-        return
-    finally:
-        if timer:
-            timer.cancel()
+
+def timeout(seconds=None):
+    """和TimeoutMixin 相比,1.没有另开使用协程,2.使用装饰器, 效率高点
+    @timeout(5)
+    def test():
+        gevent.sleep(8)
+        return "test"
+    ret =  test()
+    if not isinstance(ret, BaseException):
+        print ret
+    """
+    
+    def wrapper(func):
+        def _wrapper(*args, **kw):
+            timer = None
+            if seconds is not None:
+                timer = gevent.Timeout(seconds)
+                timer.start()
+            try:
+                ret = func(*args, **kw)
+            except gevent.Timeout as t:
+                assert timer == t, t
+                print "Timeout!"
+                return t
+            except Exception as e:
+                print "Other Exception!", e
+                return e
+            finally:
+                if timer:
+                    timer.cancel()
+            return ret
+        return _wrapper
+    return wrapper
             
             
 if __name__ == "__main__":
     
+    
     class TestTimeout(TimeoutMixin):
-         
+          
         def __init__(self):
             self.set_timeout(10)
-             
+              
         def on_timeout(self):
             print "timeout..."
-             
-             
+              
+              
     tt = TestTimeout()
+    
+    @timeout(3)
+    def test():
+        gevent.sleep(5)
+        return 2
+    
+    ret = test()
+    print type(ret)
+    print isinstance(ret, BaseException)
     
     gevent.wait()
         
