@@ -9,13 +9,17 @@ import struct
 class EndPoint(gevent.Greenlet):
     """可以用在服务端/客户端"""
     
-    def __init__(self, transport):
+    def __init__(self, transport, address):
         self.transport = transport
+        self.address = address
         self.header_fmt = struct.Struct('>i')
         self.inbox = Queue()
         self.jobs = []
 
         gevent.Greenlet.__init__(self)
+        
+    def __str__(self):
+        return "[endpoint:%r]" % (self.address, )
 
     def put_data(self, data):
         self.inbox.put(data)
@@ -102,6 +106,7 @@ def create_connection(address, timeout=None, **ssl_args):
 
 
 if __name__ == "__main__":
-    sock = create_connection(("127.0.0.1", 3306))
-    sock.sendall("aaaa")
-    print sock.recv(10)
+    import struct
+    sock = create_connection(("127.0.0.1", 7000))
+    sock.sendall(struct.pack(">I5s", 5, "hello"))
+    print repr(sock.recv(10))
