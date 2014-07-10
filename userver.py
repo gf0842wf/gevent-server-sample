@@ -4,20 +4,13 @@
 
 import gevent
 from gevent.server import DatagramServer
+from uendpoint import EndPoint
 
-
-class Bot(object):
+class Bot(EndPoint):
     
-    def __init__(self, svr, address):
-        self.svr = svr
-        self.address = address
-        
-    def __str__(self):
-        return "[bot:%r]" % (self.address, )
-        
-    def handle(self, datagram):
-        print '%s: got %r ' % (self, datagram)
-        self.svr.sendto(datagram, self.address)
+    def on_data(self, data):
+        print '%s: got %r ' % (self, data)
+        self.put_data(data)
     
 
 class UDPServer(DatagramServer):
@@ -25,13 +18,15 @@ class UDPServer(DatagramServer):
     
     def handle(self, datagram, address):
         """有datagram到来时会调用handle
-        :可以根据address/uid来建立endpoint(这里是Bot对象)
+        :可以根据address/uid来建立endpoint
         """
         # self.socket.sendto(datagram, address)
         # self.sendto(datagram, address)
         client = self.clients.get(address)
         if not client:
-            client = self.clients.setdefault(address, Bot(self, address))
+            bot = Bot(self, address)
+            bot.start()
+            client = self.clients.setdefault(address, bot)
         client.handle(datagram)
 
 
