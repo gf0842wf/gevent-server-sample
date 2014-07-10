@@ -22,7 +22,7 @@ class EndPoint(gevent.Greenlet):
         
     def put_data(self, data):
         self.inbox.put(data)
-        
+    
     def on_data(self, data):
         """called when data received. (stripped the 4 bytes header)"""
         raise NotImplementedError()
