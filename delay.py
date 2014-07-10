@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """以协程的方式实现:延时调用,循环调用,超时调用
-: 如果为了优化协程数,最好使用 gevent.Timeout(下面的 test_timeout), 而不是使用这里的 TimeoutMixin
+: 如果为了优化协程数,最好使用 gevent.Timeout(或者下面的 timeout), 而不是使用 TimeoutMixin
 """
 
 from gevent import Greenlet
