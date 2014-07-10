@@ -5,10 +5,21 @@
 import gevent
 from gevent.server import DatagramServer
 from uendpoint import EndPoint
+from delay import TimeoutMixin
 
-class Bot(EndPoint):
+
+class Bot(EndPoint, TimeoutMixin):
     
+    def __init__(self, svr, address):
+        self.set_timeout(10) # heartbeat: 10s
+        EndPoint.__init__(self, svr, address)
+        
+    def on_timeout(self):
+        print "heartbeat timeout..."
+        # to do somethin and delete the object
+        
     def on_data(self, data):
+        self.reset_timeout()
         print '%s: got %r ' % (self, data)
         self.put_data(data)
     
