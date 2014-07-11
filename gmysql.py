@@ -7,6 +7,7 @@ default charset set to utf8
 default autocommit=1 (Transction is not recommended)
 default cursorclass=DictCursor
 """
+
 import gevent
 from gevent import monkey; monkey.patch_socket()
 from gevent.queue import Queue
@@ -65,7 +66,7 @@ class PoolError(Exception):
 
 class Pool(object):
     """[连接池] 每个连接使用一个gevent队列的连接池
-    - 队列格式: (sql, args, )
+    : 队列格式: (sql, args, )
     """
     def __init__(self, args, n):
         assert n > 0, n
@@ -92,10 +93,10 @@ class Pool(object):
     
     def loop(self, conn, q):
         """
-        - 队列格式: (sql, args, op, curclass, result),
-        - op是操作类型, 0是execute, 1是fetchone, 2是fetchall, 3是获得结果字段名列表
-        - curclass是结果集类型, 默认是dict(字典), 也可以是list(列表).
-        - result是gevent的AsyncResult对象, result为空则非阻塞
+        : 队列格式: (sql, args, op, curclass, result),
+        : op是操作类型, 0是execute, 1是fetchone, 2是fetchall, 3是获得结果字段名列表
+        : curclass是结果集类型, 默认是dict(字典), 也可以是list(列表).
+        : result是gevent的AsyncResult对象, result为空则非阻塞
         """
         while 1:
             sql, args, op, curclass, result = q.peek()
@@ -129,10 +130,6 @@ class Pool(object):
         """选择第几个队列, 默认返回长度最小的队列"""
         if qid >= 0:
             return self.queues[qid%len(self.queues)]
-#         minq = self.queues[0]
-#         for q in self.queues:
-#             if minq.qsize() > q.qsize():
-#                 minq = q
         minq = min(self.queues, key=lambda qs:qs.qsize())
         return minq
 
