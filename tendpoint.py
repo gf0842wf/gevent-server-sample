@@ -31,7 +31,9 @@ class EndPoint(gevent.Greenlet):
         while True:
             try:
                 # 其实这里 用socket的recv(4)等是不行的, 假如发送的没有4字节就会报错,所以要循环接受解析, 或者用类似golang io.ReadFull这样的函数来读
+                # 也就是socket.makefile接口可以实现,文件io接口,可以方便的read(size),如果不够size会一直阻塞
                 # length = self.transport.recv(4)
+                # FIXME: 改为makefile接口
                 length = timeout_partial(10, self.transport.recv, 4) # 读头心跳10s
                 if isinstance(length, BaseException):
                     print "heartbeat header timeout..."
@@ -43,6 +45,7 @@ class EndPoint(gevent.Greenlet):
                     # break
                 length = self.header_fmt.unpack(length)[0]
                 # data = self.transport.recv(length)
+                # FIXME: 改为makefile接口
                 data = timeout_partial(20, self.transport.recv, length) # 读内容心跳20s
                 if isinstance(data, BaseException):
                     print "heartbeat data timeout..."
@@ -123,5 +126,7 @@ if __name__ == "__main__":
     import struct
     sock = create_connection(("127.0.0.1", 7000))
     sock.sendall(struct.pack(">I5s", 5, "hello"))
-    while True:
-        print repr(sock.recv(10))
+    sf = sock.makefile(mode="r")
+    print repr(sf.read(10))
+#     while True:
+#         print repr(sock.recv(10))
