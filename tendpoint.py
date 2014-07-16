@@ -30,6 +30,7 @@ class EndPoint(gevent.Greenlet):
         """如果封包方式不同,需要重载这个函数"""
         while True:
             try:
+                # 其实这里 用socket的recv(4)等是不行的, 假如发送的没有4字节就会报错,所以要循环接受解析, 或者用类似golang io.ReadFull这样的函数来读
                 # length = self.transport.recv(4)
                 length = timeout_partial(10, self.transport.recv, 4) # 读头心跳10s
                 if isinstance(length, BaseException):
