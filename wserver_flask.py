@@ -6,7 +6,7 @@ import gevent
 from gevent import socket
 from gevent.pywsgi import WSGIServer
 from gmysql import Pool
-from flask import Flask, g
+from flask import Flask
 
 app = Flask(__name__)
 
@@ -15,7 +15,7 @@ app.config.update(dict(
                        )
                   )
 
-pool = Pool(app.config["DB"], 6)
+pool = Pool(app.config["DB"], 20)
 
 
 @app.route("/")
