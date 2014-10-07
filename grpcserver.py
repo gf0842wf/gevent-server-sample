@@ -16,7 +16,7 @@ class TaskServer(RPCServer):
 """rpc client
 from mprpc import RPCClient
 rpcclient = RPCClient("127.0.0.1", 7005)
-rpcclient.echo("abcd")
+rpcclient.echo("abcd", reconnect=5)
 """
 
 if __name__ == "__main__":
