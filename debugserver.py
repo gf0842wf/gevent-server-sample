@@ -21,7 +21,7 @@ import socket
 import threading
 import logging
  
-def start_server(host_addr=("0.0.0.0", 7006)):
+def start_server(host_addr):
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     except socket.error as e:
