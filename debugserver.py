@@ -20,6 +20,7 @@
 import socket
 import threading
 import logging
+import errno
  
 def start_server(host_addr):
     try:
@@ -60,7 +61,11 @@ def connection_handler(conn, addr):
                 result = eval(cmd)
             except Exception as e:
                 result = "%s: %s" % (e.__class__, str(e))
-        conn.sendall("%s\n" % str(result))
+        try:
+            conn.sendall("%s\n" % str(result))
+        except IOError as e:
+            if e.errno == errno.EPIPE:
+                return
     conn.close()
         
 
