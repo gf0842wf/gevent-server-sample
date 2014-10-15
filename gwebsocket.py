@@ -19,5 +19,5 @@ class EchoApplication(WebSocketApplication):
 
 
 if __name__ == "__main__":
-    wss = WebSocketServer(('', 7007),Resource({'/': EchoApplication}))
+    wss = WebSocketServer(('', 8201),Resource({'/chat': EchoApplication}))
     wss.serve_forever()
