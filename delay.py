@@ -109,27 +109,22 @@ class TimeoutMixin(object):
     """
     
     dc = None
-    start_flag = 0
     
     def set_timeout(self, seconds):
         """可以重新设置超时时间"""
-        if self.start_flag == 1: self.cancel()
         self.seconds = seconds
         self.dc = DelayCall(seconds, self.on_timeout)
         self.dc.start()
-        self.start_flag = 1
     
     def on_timeout(self):
         raise NotImplementedError
      
     def cancel(self):
         self.dc.cancel()
-        self.start_flag = 0
         
     def reset_timeout(self):
         """重置超时
         """
-        assert self.start_flag == 1
         self.dc.cancel()
         self.dc = DelayCall(self.seconds, self.on_timeout)
         self.dc.start()
