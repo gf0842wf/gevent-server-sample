@@ -2,7 +2,7 @@
 
 """gevent websocket server"""
 
-# https://github.com/jgelens/gevent-websocket
+# https://github.com/gf0842wf/gevent-websocket
 
 from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
 
