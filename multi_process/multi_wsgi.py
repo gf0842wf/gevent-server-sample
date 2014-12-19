@@ -7,11 +7,11 @@ from gevent.pywsgi import WSGIServer
 from multiprocessing import Process
 import gevent
 
-def _app(environ, start_response):
+def app(environ, start_response):
     start_response('200 OK', [('Content-Type','text/plain')])
     yield "hello\n"
 
-server = WSGIServer(('0.0.0.0', 6000), _app, backlog=100000, log=None)
+server = WSGIServer(('0.0.0.0', 6000), app, backlog=100000, log=None)
 server.init_socket()
 
 def serve_forever():
