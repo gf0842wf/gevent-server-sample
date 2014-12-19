@@ -1,59 +1,36 @@
 # -*- coding: utf-8 -*-
 
-"""WSGI Server Sample"""
+"""Multi Process WSGI Server Sample"""
 
-import gevent
-import gipc
-from gevent import socket
+from gevent import monkey; monkey.patch_os()
 from gevent.pywsgi import WSGIServer
+from multiprocessing import Process
+import gevent
 
-import tornado.web
-import tornado.wsgi
+def _app(environ, start_response):
+    start_response('200 OK', [('Content-Type','text/plain')])
+    yield "hello\n"
 
+server = WSGIServer(('0.0.0.0', 6000), _app, backlog=100000, log=None)
+server.init_socket()
 
-class MainHandler(tornado.web.RequestHandler):
-    
-    def get(self):
-        self.write("hello")
-
-
-class SleepHandler(tornado.web.RequestHandler):
-    
-    def get(self):
-        gevent.sleep(5)
-        self.write("Test")
-
-
-app = tornado.wsgi.WSGIApplication([
-    (r"/", MainHandler),
-    (r"/sleep", SleepHandler),
-])
-    
-    
-class WServerManager(gevent.Greenlet):
-    
-    def __init__(self, port, app=None):
-        self.port = port
-        self.app = app
-        gevent.Greenlet.__init__(self)
-
-    def _app(self, environ, start_response):
-        start_response('200 OK', [('Content-Type','text/plain')])
-        yield "hello\n"
-
-    def _run(self):
-        print "WSGI Server Listen at port %s" % self.port
-        server = WSGIServer(('0.0.0.0', self.port), self.app or self._app)
-        server.serve_forever()
-
-
-def server_process():
-    ws = WServerManager(6000, app)
-    ws.start()
-    
-if __name__ == "__main__":
-    ss = gipc.start_process(server_process)
-    ss.join()
-    
+def serve_forever():
+    server.start_accepting()
+    server._stop_event.wait()
     gevent.wait()
+
+process_count = 2
+processes = []
+for i in range(process_count):
+    p = Process(target=serve_forever, args=tuple())
+    p.start()
+    processes.append(p)
+
+try:
+    print "main process does nothing!.."
+    for p in processes:
+        p.join()
+    #serve_forever()
+except KeyboardInterrupt:
+    print "bye"
     
