@@ -4,7 +4,7 @@
 
 # 注意修改: .tpl文件里面的ws的ip和端口
 
-from gevent import monkey; monkey.patch_os()
+from gevent import monkey; monkey.patch_all()# monkey.patch_os()
 from gevent.pywsgi import WSGIServer
 from multiprocessing import Process
 import gevent
