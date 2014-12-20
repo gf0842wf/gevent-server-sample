@@ -49,9 +49,9 @@ for i in range(process_count):
     processes.append(p)
 
 try:
-    print "main process does nothing!.."
+    print "main process .."
+    serve_forever() # 主进程也跑一个
     for p in processes:
         p.join()
-    #serve_forever()
 except KeyboardInterrupt:
     print "bye"
