@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""multi process and multi greenlet spawn & pool"""
+"""multi process and multi greenlet spawn"""
 
 import gevent
 import gipc
@@ -9,12 +9,13 @@ import random
 
 class PPool(object):
     """process pool + gevent spawn
-    : 必须放在入口文件的最开始初调用init函数, 因为进程会复制主进程空间(包括已有协程)
+    : 必须放在入口文件的最开始初调用init函数, 因为子进程会复制主进程空间(包括已有协程)
     from share import ppool; ppool.init()
     import sys; sys.modules.pop("threading", None)
     from gevent import monkey; monkey.patch_all()
     ...
     """
+    # TODO: 获得spawn结果---再使用一个主进程读,子进程写的pipe, 主进程通过pipe给子进程传递函数和参数的同时还传递uuid,子进程处理完后,给主进程传递uuid和结果,主进程通过uuid来获得这个结果
 
     def __init__(self, process_size=1):
         """
