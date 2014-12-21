@@ -9,7 +9,7 @@ import random
 
 class PPool(object):
     """process pool + gevent spawn
-    : 必须放在入口文件的最开始初调用init函数, 因为子进程会复制主进程空间(包括已有协程)
+    : 必须放在入口文件的最开始初调用PPool实例的init函数, 因为子进程会复制主进程空间(包括已有协程)
     from share import ppool; ppool.init()
     import sys; sys.modules.pop("threading", None)
     from gevent import monkey; monkey.patch_all()
@@ -48,6 +48,12 @@ class PPool(object):
         return random.choice(self.pipe_writers)
 
     def spawn(self, f, _sn, *args, **kwargs):
+        """
+        @param f: func
+        @param _sn: 第几个进程伺服该函数, _sn=None为随机选取
+        @param args, kwargs: f的参数
+        # TODO: spawn返回一个greenlet,通过它来获取结果等状态
+        """
         pipe = self.select_pipe_writer(_sn)
         pipe.put([f, args, kwargs])
         
