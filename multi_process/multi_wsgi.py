@@ -28,7 +28,7 @@ for i in range(process_count):
 
 try:
     print "main process .."
-    serve_forever() # Ö÷½ø³ÌÒ²ÅÜÒ»¸ö
+    serve_forever() # ä¸»è¿›ç¨‹ä¹Ÿè·‘ä¸€ä¸ª
     for p in processes:
         p.join()
 except KeyboardInterrupt:
