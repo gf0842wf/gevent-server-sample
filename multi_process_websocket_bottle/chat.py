@@ -2,7 +2,7 @@
 
 """Multi Process WSGI And WebSocket Server Sample"""
 
-# ×¢ÒâĞŞ¸Ä: .tplÎÄ¼şÀïÃæµÄwsµÄipºÍ¶Ë¿Ú
+# æ³¨æ„ä¿®æ”¹: .tplæ–‡ä»¶é‡Œé¢çš„wsçš„ipå’Œç«¯å£
 
 from gevent import monkey; monkey.patch_all()# monkey.patch_os()
 from gevent.pywsgi import WSGIServer
@@ -50,7 +50,7 @@ for i in range(process_count):
 
 try:
     print "main process .."
-    serve_forever() # Ö÷½ø³ÌÒ²ÅÜÒ»¸ö
+    serve_forever() # ä¸»è¿›ç¨‹ä¹Ÿè·‘ä¸€ä¸ª
     for p in processes:
         p.join()
 except KeyboardInterrupt:
